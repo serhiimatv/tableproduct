@@ -20,10 +20,6 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
 
   const [perPage, setPerPage] = useState(10);
 
-  const [totalPage, setTotalPage] = useState(
-    Math.ceil(products.length / perPage)
-  );
-
   const [pageNumber, setPageNumber] = useState(1);
 
   const removeProductHandler = (id: number) => {
@@ -51,17 +47,10 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
   }, [searchParams]);
 
   useEffect(() => {
-    setTotalPage(Math.ceil(products.length / perPage));
-
-    replace(`${pathname}`);
-  }, [perPage]);
-
-  useEffect(() => {
-    setTotalPage(Math.ceil(filterProducts().length / perPage));
     if (search.trim() !== "") {
       replace(`${pathname}`);
     }
-  }, [search, perPage]);
+  }, [search]);
 
   return (
     <>
@@ -113,7 +102,12 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
           </tbody>
         </table>
       </div>
-      <Pagination totalPage={totalPage} pageNumber={pageNumber} />
+      <Pagination
+        totalCount={filterProducts().length}
+        currentPage={pageNumber}
+        perPage={perPage}
+        siblingCount={1}
+      />
     </>
   );
 };

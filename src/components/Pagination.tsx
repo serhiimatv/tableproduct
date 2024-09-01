@@ -1,25 +1,43 @@
-"use client";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { FC } from "react";
+import React, { FC } from "react";
+import { usePagination, DOTS } from "../hooks/usePagination";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface IProps {
-  totalPage: number;
-  pageNumber: number;
+  totalCount: number;
+  siblingCount: number;
+  currentPage: number;
+  perPage: number;
 }
 
-const Pagination: FC<IProps> = ({ totalPage, pageNumber }) => {
+const Pagination: FC<IProps> = ({
+  totalCount,
+  siblingCount,
+  currentPage,
+  perPage,
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const goToPage = (page: number) => {
+  const paginationRange = usePagination({
+    currentPage,
+    totalCount,
+    perPage,
+    siblingCount,
+  });
+
+  if (currentPage === 0 || paginationRange.length < 2) {
+    return null;
+  }
+
+  const onPageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", page.toString());
 
     replace(`${pathname}?${params.toString()}`);
   };
 
+  // let lastPage = paginationRange[paginationRange.length - 1];
   return (
     <>
       <div className="flex justify-center items-center h-16">
@@ -27,81 +45,48 @@ const Pagination: FC<IProps> = ({ totalPage, pageNumber }) => {
           <span
             className="text-[12px] text-grayBorder cursor-pointer dark:text-white"
             onClick={() => {
-              if (pageNumber - 1 === 0) {
+              if (currentPage - 1 === 0) {
                 return undefined;
               } else {
-                goToPage(pageNumber - 1);
+                onPageChange(currentPage - 1);
               }
             }}
           >
             Previous
           </span>
-          <span
-            className={`flex justify-center items-center h-[31px] w-[31px] rounded-lg cursor-pointer 
-                          ${
-                            pageNumber !== 1
-                              ? "bg-gray dark:bg-darkViolet"
-                              : "text-white bg-buttonViolet"
-                          }`}
-            onClick={() => {
-              goToPage(1);
-            }}
-          >
-            1
-          </span>
-          {totalPage > 3 && pageNumber >= 4 ? (
-            <span className="text-lg">...</span>
-          ) : null}
-          {pageNumber - 1 > 1 && (
-            <span
-              className="flex justify-center items-center h-[31px] w-[31px] rounded-lg cursor-pointer bg-gray dark:bg-darkViolet"
-              onClick={() => {
-                goToPage(pageNumber - 1);
-              }}
-            >
-              {pageNumber - 1}
-            </span>
-          )}
-          {pageNumber !== 1 && pageNumber !== totalPage ? (
-            <span className="flex justify-center items-center h-[31px] w-[31px] rounded-lg cursor-pointer text-white bg-buttonViolet">
-              {pageNumber}
-            </span>
-          ) : null}
-          {pageNumber + 1 !== totalPage && pageNumber !== totalPage ? (
-            <span
-              className="flex justify-center items-center h-[31px] w-[31px] rounded-lg cursor-pointer bg-gray dark:bg-darkViolet"
-              onClick={() => {
-                goToPage(pageNumber + 1);
-              }}
-            >
-              {pageNumber + 1}
-            </span>
-          ) : null}
-          {totalPage > 3 && pageNumber <= totalPage - 3 ? (
-            <span className="text-lg">...</span>
-          ) : null}
-          {totalPage !== 1 && (
-            <span
-              className={`flex justify-center items-center h-[31px] w-[31px] rounded-lg cursor-pointer 
-                          ${
-                            pageNumber !== totalPage
-                              ? "bg-gray dark:bg-darkViolet"
-                              : "text-white bg-buttonViolet"
-                          }`}
-              onClick={() => {
-                goToPage(totalPage);
-              }}
-            >
-              {totalPage}
-            </span>
-          )}
+
+          {paginationRange.map((pageNumber, idx) => {
+            if (pageNumber === DOTS) {
+              return (
+                <span className="text-lg" key={pageNumber + idx}>
+                  ...
+                </span>
+              );
+            }
+
+            return (
+              <span
+                className={`flex justify-center items-center h-[31px] w-[31px] rounded-lg cursor-pointer 
+                ${
+                  pageNumber !== currentPage
+                    ? "bg-gray dark:bg-darkViolet"
+                    : "text-white bg-buttonViolet"
+                }`}
+                onClick={() => onPageChange(pageNumber as number)}
+                key={pageNumber}
+              >
+                {pageNumber}
+              </span>
+            );
+          })}
+
           <span
             className="text-[12px] text-grayBorder cursor-pointer dark:text-white"
             onClick={() => {
-              if (pageNumber + 1 > totalPage) {
+              if (currentPage + 1 >= Math.ceil(totalCount / perPage)) {
                 return undefined;
               } else {
-                goToPage(pageNumber + 1);
+                onPageChange(currentPage + 1);
               }
             }}
           >
