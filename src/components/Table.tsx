@@ -52,6 +52,10 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
     }
   }, [search]);
 
+  useEffect(() => {
+    replace(`${pathname}`);
+  }, [perPage]);
+
   return (
     <>
       <div className="flex items-center p-4 gap-3">
