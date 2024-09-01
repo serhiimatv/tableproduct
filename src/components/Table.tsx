@@ -20,8 +20,6 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
 
   const [perPage, setPerPage] = useState(10);
 
-  const [pageNumber, setPageNumber] = useState(1);
-
   const removeProductHandler = (id: number) => {
     setProducts(products.filter((item) => item.trackingId !== id));
   };
@@ -30,21 +28,11 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
     if (search.trim() === "") {
       return products;
     } else {
-      return products.filter((item) => {
-        if (item.productName.toLocaleLowerCase().includes(search)) {
-          return true;
-        }
-      });
+      return products.filter((item) =>
+        item.productName.toLocaleLowerCase().includes(search)
+      );
     }
   };
-
-  useEffect(() => {
-    setPageNumber(
-      Number(searchParams.get("page")) === 0
-        ? 1
-        : Number(searchParams.get("page"))
-    );
-  }, [searchParams]);
 
   useEffect(() => {
     if (search.trim() !== "") {
@@ -100,7 +88,11 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
             <TableBodyRow
               products={filterProducts()}
               perPage={perPage}
-              pageNumber={pageNumber}
+              pageNumber={
+                Number(searchParams.get("page")) !== 0
+                  ? Number(searchParams.get("page"))
+                  : 1
+              }
               onRemove={removeProductHandler}
             />
           </tbody>
@@ -108,7 +100,11 @@ const Table: FC<{ data: Product[] }> = ({ data }) => {
       </div>
       <Pagination
         totalCount={filterProducts().length}
-        currentPage={pageNumber}
+        currentPage={
+          Number(searchParams.get("page")) !== 0
+            ? Number(searchParams.get("page"))
+            : 1
+        }
         perPage={perPage}
         siblingCount={1}
       />
