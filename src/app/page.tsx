@@ -7,6 +7,7 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Product } from "@/model/product";
 import { promises as fs } from "fs";
 import { Suspense } from "react";
+import data from "../../data.json";
 
 export default async function Home({
   searchParams,
@@ -17,8 +18,7 @@ export default async function Home({
     search?: string;
   };
 }) {
-  const file = await fs.readFile(process.cwd() + "/src/data.json", "utf8");
-  const data: Product[] = JSON.parse(file);
+  const products: Product[] = data as Product[];
 
   const perpage = searchParams?.perpage || "10";
   const page = Number(searchParams?.page) || 1;
@@ -26,9 +26,9 @@ export default async function Home({
 
   const filterProducts = () => {
     if (search.trim() === "") {
-      return data;
+      return products;
     } else {
-      return data.filter((item) =>
+      return products.filter((item) =>
         item.productName.toLocaleLowerCase().includes(search)
       );
     }
