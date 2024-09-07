@@ -1,12 +1,12 @@
 import { Product } from "@/model/product";
 import Image from "next/image";
 import { FC } from "react";
+import ActionButtons from "./Actions";
 
 interface IProps {
   products: Product[];
-  perPage: number;
-  pageNumber: number;
-  onRemove: (id: number) => void;
+  perpage: number;
+  page: number;
 }
 
 const statusTheme = {
@@ -15,19 +15,11 @@ const statusTheme = {
   Process: "text-orangeText bg-orangeBg",
 };
 
-const TableBodyRow: FC<IProps> = ({
-  products,
-  pageNumber,
-  perPage,
-  onRemove,
-}) => {
+const TableBodyRow: FC<IProps> = ({ products, perpage, page }) => {
   return (
     <>
       {products.map((item, idx) => {
-        if (
-          idx < perPage * pageNumber &&
-          idx > (pageNumber - 1) * perPage - 1
-        ) {
+        if (idx < perpage * page && idx > (page - 1) * perpage - 1) {
           return (
             <tr
               className="px-4 grid grid-cols-[7%_28%_15%_7%_11.5%_10.5%_9%_12%] h-16 bg-lightViolet even:bg-white
@@ -66,48 +58,7 @@ const TableBodyRow: FC<IProps> = ({
                   {item.status}
                 </span>
               </td>
-              <td className="flex justify-center items-center gap-5">
-                <svg
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="cursor-pointer"
-                >
-                  <path
-                    d="M11.625 4h-7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                    stroke="#624DE3"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M19.125 2.5a2.121 2.121 0 1 1 3 3l-9.5 9.5-4 1 1-4 9.5-9.5z"
-                    stroke="#624DE3"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <svg
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="cursor-pointer"
-                  onClick={() => onRemove(item.trackingId)}
-                >
-                  <path
-                    d="M3.625 6h18M8.625 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V6h14zM10.625 11v6M14.625 11v6"
-                    stroke="#A30D11"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </td>
+              <ActionButtons />
             </tr>
           );
         }

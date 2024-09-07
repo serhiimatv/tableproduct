@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 const inter = Montserrat({ subsets: ["latin"] });
 
@@ -18,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class">{children}</ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

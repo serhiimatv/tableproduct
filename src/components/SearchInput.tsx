@@ -1,14 +1,27 @@
-import { Dispatch, FC, SetStateAction } from "react";
+"use client";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { FC } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
-interface IProps {
-  search: string;
-  setSearch: Dispatch<SetStateAction<string>>;
-}
+const SearchInput: FC = () => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
-const SearchInput: FC<IProps> = ({ search, setSearch }) => {
+  const handleSearch = useDebouncedCallback((value: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
+
   return (
     <>
-      <div className="flex items-center relative">
+      <div className="flex items-center relative mr-auto">
         <svg
           width="16"
           height="16"
@@ -31,8 +44,10 @@ const SearchInput: FC<IProps> = ({ search, setSearch }) => {
                      placeholder:text-grayBorder placeholder:text-[12px]
                     dark:border-white dark:bg-violet dark:placeholder:text-white"
           placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          defaultValue={searchParams.get("search")?.toString()}
+          onChange={(e) => {
+            handleSearch(e.target.value);
+          }}
         />
       </div>
     </>

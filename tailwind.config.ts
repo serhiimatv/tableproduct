@@ -22,7 +22,7 @@ const config: Config = {
         redText: "#a30d11",
         redBg: "#fbe7e8",
         greenText: "#1f9254",
-        greenBg: "#f7f6fe",
+        greenBg: "#ebf9f1",
         orangeText: "#cd6200",
         orangeBg: "#fef2e5",
       },

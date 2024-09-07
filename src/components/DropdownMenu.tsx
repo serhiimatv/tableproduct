@@ -1,15 +1,33 @@
 "use client";
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { FC, useEffect, useState } from "react";
 
 interface IProps {
-  perPage: number;
-  setPerPage: Dispatch<SetStateAction<number>>;
+  perPage: string;
 }
 
-const DropdownMenu: FC<IProps> = ({ perPage, setPerPage }) => {
-  const perPageCounts = [10, 20, 30, 40, 60, 100];
+const DropdownMenu: FC<IProps> = ({ perPage }) => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const params = new URLSearchParams(searchParams);
+
+  const perPageCounts = ["10", "20", "30", "40", "60", "100"];
 
   const [isShow, setIsShow] = useState(false);
+
+  const perPageChangeHandler = (perPage: string) => {
+    params.set("perpage", perPage);
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    if (!params.get("perpage")?.toString().trim()) {
+      params.set("perpage", perPage);
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }, []);
 
   return (
     <>
@@ -40,15 +58,14 @@ const DropdownMenu: FC<IProps> = ({ perPage, setPerPage }) => {
           >
             <ul className="flex flex-col justify-center text-sm">
               {perPageCounts.map((item) => {
-                if (item !== perPage) {
+                if (item !== params.get("perpage")?.toString().trim()) {
                   return (
                     <li
                       className="text-[12px] cursor-pointer hover:bg-hoverGray px-[10px] text-center
                                 dark:text-white dark:hover:bg-buttonVioletHover"
                       key={item}
                       onClick={() => {
-                        setPerPage(item);
-                        setIsShow(false);
+                        perPageChangeHandler(item);
                       }}
                     >
                       {item}
