@@ -17,7 +17,7 @@ export default async function Home({
     search?: string;
   };
 }) {
-  const file = await fs.readFile(process.cwd() + "/data.json", "utf8");
+  const file = await fs.readFile(process.cwd() + "/src/data.json", "utf8");
   const data: Product[] = JSON.parse(file);
 
   const perpage = searchParams?.perpage || "10";
